@@ -8,9 +8,17 @@ import { getProductData } from "../../api/apiServices";
 const RecentExpenses = () => {
     const isRecentScreenFocused = useIsFocused();
     const dispatch = useDispatch();
+    const focus = useIsFocused()
 
     const [recentProduct, setRecentProducts] = useState<any>([]);
     const [isLoader, setIsLoader] = useState(true);
+    const [isFocused, setIsFocused] = useState(false);
+
+    useEffect(()=>{
+        if(focus){
+            setIsFocused(!isFocused)
+        }
+    }, [focus]);
 
     useEffect(() => {
         if (isRecentScreenFocused) {
@@ -21,21 +29,25 @@ const RecentExpenses = () => {
     }, [isRecentScreenFocused]);
 
     useEffect(() => {
+        setIsLoader(true);
         functionToGetProductData();
-    }, []);
+    }, [isFocused]);
 
     const functionToGetProductData = async () => {
         try {
             const productData: any = await getProductData();
-            let recentData = productData.splice(0, 5);
-            setRecentProducts(recentData);
-            setTimeout(()=>{
-                setIsLoader(false);
-            }, 2000)
-            console.log('productData----------->>', recentData.length)
+            if(productData !== undefined){
+                let recentData = productData.products.splice(0, 5);
+                setRecentProducts(recentData);
+                setTimeout(()=>{
+                    setIsLoader(false);
+                }, 2000)
+                console.log('productData recent----------->>', recentData.length);
+            }
         } catch (error) {
             setIsLoader(false);
-            console.log('functionToGetProductData error ----->>', error)
+            setRecentProducts([]);
+            console.log('functionToGetProductData error ----->>', error);
         }
     }
 
@@ -45,7 +57,7 @@ const RecentExpenses = () => {
             :
             <ScrollView contentContainerStyle={styles.recentExpence}>
                 {recentProduct.map((item: any) => (
-                    <View style={styles.outerListContainer}>
+                    <View key={item.id} style={styles.outerListContainer}>
                         <View style={styles.listContainer}>
                             <Text style={styles.titleText}>{item.title}</Text>
                         </View>

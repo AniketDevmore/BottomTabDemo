@@ -4,9 +4,12 @@ import RecentExpenses from "../screens/RecentExpenses/RecentExpenses";
 import AllExpenses from "../screens/AllExpenses/AllExpenses";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useSelector } from "react-redux";
+import MaterialTopTabNavigation from "./MaterialTopTabNavigation";
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+import { useEffect } from "react";
 
 const BottomTabNavigation = () => {
-  const BottomStack = createBottomTabNavigator();
+  const BottomStack = createMaterialBottomTabNavigator();
   const isRecentScreenFocused = useSelector((state: any) => state.route.isRecentFocused);
   const isAllScreenFocused = useSelector((state: any) => state.route.isAllExpenseFocused);
 
@@ -41,6 +44,7 @@ const BottomTabNavigation = () => {
 
   const RecentExpensesListner = (navigation: any) => {
     console.log('isRecentScreenFocused---------->>', isRecentScreenFocused)
+    navigation.navigate('topTab');
     if (!isRecentScreenFocused) {
       navigation.dispatch(
         CommonActions.reset({
@@ -64,26 +68,29 @@ const BottomTabNavigation = () => {
   };
 
   return (
-    <BottomStack.Navigator screenOptions={({ route }) => ({
-      tabBarIcon: ({ focused, color, size }) =>
-        renderTabIcon(route, focused, color, size),
-      tabBarActiveTintColor: "#006600",
-      tabBarInactiveTintColor: "#a6a6a6",
-      tabBarStyle: {
+    <BottomStack.Navigator
+      activeColor="#006600"
+      inactiveColor="#a6a6a6"
+      shifting={true}
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }: any) =>
+          renderTabIcon(route, focused, color, size),
+      })}
+      barStyle={{
         borderTopLeftRadius: 16,
         borderTopRightRadius: 16,
-        backgroundColor: '#ccffcc',
+        backgroundColor: '#e6e6e6',
         borderTopColor: "#cccccc",
-        borderTopWidth: 0.5
-      }
-    })}
+        borderTopWidth: 0.5,
+      }}
       initialRouteName={'RecentExpenses'}
     >
       <BottomStack.Screen
         name='RecentExpenses'
-        component={RecentExpenses}
+        component={MaterialTopTabNavigation}
         options={{
-          headerShown: false,
+          // headerShown: false,
+          // tabBarShowLabel: false
           tabBarLabel: 'Recent Expenses'
         }}
         listeners={({ navigation }) => ({
@@ -91,7 +98,8 @@ const BottomTabNavigation = () => {
         })}
       />
       <BottomStack.Screen name='AllExpenses' component={AllExpenses} options={{
-        headerShown: false,
+        // headerShown: false,
+        // tabBarShowLabel: false,
         tabBarLabel: 'All Expenses'
       }}
         listeners={({ navigation }) => ({

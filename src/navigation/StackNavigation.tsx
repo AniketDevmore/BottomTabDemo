@@ -1,7 +1,7 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import MainScreen from "../screens/MainScreen/MainScreen";
 import BottomTabNavigation from "./BottomTabNavigation";
-
+import DrawerNavigation from "./DrawerNavigation";
 
 const StackNavigation = () => {
     const Stack = createStackNavigator();
@@ -9,8 +9,7 @@ const StackNavigation = () => {
         <Stack.Navigator screenOptions={{
             headerShown: false
         }}>
-            <Stack.Screen name='BottomStackContainer' component={BottomTabNavigation} />
-            <Stack.Screen name='MainScreen' component={MainScreen} />
+            <Stack.Screen name='DrawerNavigation' component={DrawerNavigation} />
         </Stack.Navigator>
     )
 }

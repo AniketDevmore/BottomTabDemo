@@ -8,13 +8,21 @@ import { getProductData } from "../../api/apiServices";
 const AllExpenses = () => {
     const isRecentScreenFocused = useIsFocused();
     const dispatch = useDispatch();
+    const focus = useIsFocused();
 
     const [recentProduct, setRecentProducts] = useState<any>([]);
     const [isLoader, setIsLoader] = useState(true);
+    const [isFocused, setIsFocused] = useState(false)
 
     // pagination states
     const [currentPageNumber, setCurrentPageNumber] = useState<number>(1);
     const [totalPageCount, setTotalPageCount] = useState<number>(0)
+
+    useEffect(()=>{
+        if(focus){
+            setIsFocused(!isFocused)
+        }
+    }, [focus]);
 
     useEffect(() => {
         if (isRecentScreenFocused) {
@@ -25,20 +33,24 @@ const AllExpenses = () => {
     }, [isRecentScreenFocused]);
 
     useEffect(() => {
+        setIsLoader(true);
         functionToGetProductData();
-    }, []);
+    }, [isFocused]);
 
     const functionToGetProductData = async () => {
         try {
             const productData: any = await getProductData();
-            setRecentProducts(productData);
-            setTimeout(()=>{
-                setIsLoader(false);
-            }, 2000)
-            console.log('productData----------->>', productData.length)
+            if(productData !== undefined){
+                setRecentProducts(productData.products);
+                setTimeout(()=>{
+                    setIsLoader(false);
+                }, 2000)
+                console.log('productData all----------->>', productData.products.length);
+            }
         } catch (error) {
-            setIsLoader(false)
-            console.log('functionToGetProductData error ----->>', error)
+            setIsLoader(false);
+            setRecentProducts([]);
+            console.log('functionToGetProductData error ----->>', error);
         }
     }
 
@@ -48,7 +60,7 @@ const AllExpenses = () => {
             : 
             <ScrollView contentContainerStyle={styles.recentExpence}>
                 {recentProduct.map((item: any) => (
-                    <View style={styles.outerListContainer}>
+                    <View key={item.id} style={styles.outerListContainer}>
                         <View style={styles.listContainer}>
                             <Text style={styles.titleText}>{item.title}</Text>
                         </View>
